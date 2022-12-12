@@ -296,3 +296,5 @@ class BookmarksPosts(APIView):
                 'Xóa bookmarks bài viết thành công'
             }, msg_display='Hiển thị thành công'), status=status.HTTP_200_OK)
         return Response(custom_response({}, list=False, msg_display='Quá trình đã xảy ra lỗi', response_msg='ERROR', ))
+
+

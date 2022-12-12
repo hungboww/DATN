@@ -9,14 +9,14 @@ services:
       - ./redis-server:/data/redis
       - ./redis.conf:/usr/local/etc/redis/redis.conf
     ports:
-      - '6379:6379'
+      - '6378:6378'
     command: [ "redis-server", "/usr/local/etc/redis/redis.conf" ]
 
   db:
     env_file:
       - ./.env
     image: "mysql:${MYSQL_VERSION}"
-    container_name: docker_db
+    container_name: db_mysql_server
     environment:
       - MYSQL_TCP_PORT=${MYSQL_TCP_PORT}
       - MYSQL_DATABASE=${MYSQL_DATABASE}
@@ -34,6 +34,7 @@ services:
 
   web:
     build: .
+    container_name: backend
     volumes:
       - .:/code
     ports:
@@ -67,4 +68,4 @@ services:
 networks:
   default:
     external:
-      name: blogs
+      name: networks_forum
