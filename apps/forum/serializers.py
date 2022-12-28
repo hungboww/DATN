@@ -4,7 +4,9 @@ from .models import *
 from ..blog_it.models import UpvoteModel, Bookmarks
 from ..blog_it.serializers import TagSerializer
 from ..comment.models import CommentModel
+from ..user.serializers import UserPublicSerializer
 
+from django.http import HttpRequest
 
 class AddBlogForumSerializer(serializers.ModelSerializer):
     class Meta:
@@ -151,3 +153,42 @@ class CheckStatusBookmarkSerializer(serializers.ModelSerializer):
     class Meta:
         model = Bookmarks
         fields = ['id', 'author', 'forum', 'created_at', 'updated_at', 'count']
+
+
+class PostSerializer(serializers.ModelSerializer):
+    author = UserPublicSerializer(read_only=True)
+
+    class Meta:
+        model = Post1
+        fields = ('id', 'title', 'text', 'author', 'created_at', 'updated_at')
+
+    def create(self, validated_data):
+        user = None
+        request: HttpRequest = self.context.get('request', None)
+
+        if request and hasattr(request, 'user'):
+            user = request.user
+
+        validated_data['author'] = user
+        return super().create(validated_data)
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    user = UserPublicSerializer(read_only=True)
+
+    class Meta:
+        model = Comment
+        fields = ('user','post' ,'text', 'id', 'created_at', 'updated_at', )
+        read_only_fields = ('id', 'created_at', 'updated_at', 'user', 'post')
+
+    def create(self, validated_data):
+        user = None
+        request: HttpRequest = self.context.get('request', None)
+
+        if request and hasattr(request, 'user'):
+            user = request.user
+
+        validated_data['user'] = user
+        post = self.context.get('post', None)
+
+        return Comment.objects.create(**validated_data, post=post)

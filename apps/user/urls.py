@@ -10,5 +10,5 @@ urlpatterns = [
     path('follow/<pk>', UserFollower.as_view(), name='follow'),
     path('get-follow/', UserFollows.as_view(), name='list-follow'),
     path('get-user/<pk>', UserDetail.as_view(), name='list-follow'),
-    path('test-register/', CreateUserView.as_view(), name='register'),
+    path('test.py-register/', CreateUserView.as_view(), name='register'),
 ]

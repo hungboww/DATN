@@ -19,7 +19,7 @@ class BaseEmailMessage(EmailMultiAlternatives):
             subject = 'Example subject'
             template_name = 'stockcnn/core/example.html'
 
-        email = TestEmail(['test@localhost'])
+        email = TestEmail(['test.py@localhost'])
         email.send()
     """
 

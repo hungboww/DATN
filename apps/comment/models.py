@@ -23,3 +23,6 @@ class CommentModel(models.Model):
     class Meta:
         db_table = 'tbl_comment'
         ordering = ['id']
+        verbose_name = 'CommentModel'
+        verbose_name_plural = 'CommentModel'
+

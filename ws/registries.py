@@ -20,7 +20,7 @@ class PageType(Instance):
     parameters = []
     """
     A list of parameter name strings which are required when calling all methods. If
-    for example the parameter `test` is included, then you can expect that parameter
+    for example the parameter `test.py` is included, then you can expect that parameter
     to be passed in the can_add and get_group_name functions. This way you can create
     dynamic groups.
     """

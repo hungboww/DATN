@@ -35,18 +35,18 @@ def map_exceptions(exceptions: ExceptionMappingType):
     Example:
       @map_exceptions({ SomeException: 'ERROR_1' })
       def get(self, request):
-           raise SomeException('This is a test')
+           raise SomeException('This is a test.py')
 
       HTTP/1.1 400
       {
         "error": "ERROR_1",
-        "detail": "This is a test"
+        "detail": "This is a test.py"
       }
 
     Example 2:
       @map_exceptions({ SomeException: ('ERROR_1', 404, 'Other message') })
       def get(self, request):
-           raise SomeException('This is a test')
+           raise SomeException('This is a test.py')
 
       HTTP/1.1 404
       {
@@ -111,7 +111,7 @@ def validate_query_parameters(serializer: serializers.Serializer):
 
         @validate_query_parameters(MoveRowQueryParamsSerializer)
         def patch(self, request, query_params):
-           raise SomeException('This is a test')
+           raise SomeException('This is a test.py')
 
         HTTP/1.1 400
         URL: /api/database/rows/table/11/1/move/?before_id=wrong_type
@@ -168,7 +168,7 @@ def validate_body(serializer_class, partial=False):
 
         @validate_body(LoginSerializer)
         def post(self, request):
-           raise SomeException('This is a test')
+           raise SomeException('This is a test.py')
 
         HTTP/1.1 400
         {

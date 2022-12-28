@@ -9,7 +9,8 @@ from api.utils import custom_response
 # Create your views here.
 from .models import CreateUserModel, Follow
 from .serializers import RegisterUserSerializer, UpdateInformationSerializer, UserInformationSerializer, \
-    ViewUserSerializer, FollowingSerializer, UserDetailSerializer, CreateUserSerializer
+    ViewUserSerializer, FollowingSerializer, UserDetailSerializer, CreateUserSerializer, UserPublicSerializer
+from .test import PubNubService
 
 
 class CustomUserCreate(APIView):
@@ -18,6 +19,7 @@ class CustomUserCreate(APIView):
     def post(self, request):
         email = request.data['email']
         user_name = request.data['user_name']
+        print(email, user_name)
         try:
             user = CreateUserModel.objects.get(email=email)
             user_name = CreateUserModel.objects.get(user_name=user_name)
@@ -86,9 +88,18 @@ class UserInfor(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        queryset = CreateUserModel.objects.filter(id=request.user.id).first()
-        serializer = UserInformationSerializer(queryset)
-        return Response(custom_response(serializer.data, msg_display='Hiển thị thành công'),
+        print(request.user.id)
+        res = PubNubService.get_notification_token_for_user(user = request.user)
+        print('aaaaa')
+
+        user = UserPublicSerializer(request.user).data
+        data ={
+            "pn_token":res,
+            "user":user
+        }
+        # queryset = CreateUserModel.objects.filter(id=request.user.id).first()
+        # serializer = UserInformationSerializer(queryset)
+        return Response(custom_response(data, msg_display='Hiển thị thành công'),
                         status=status.HTTP_201_CREATED)
 
 

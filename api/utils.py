@@ -34,17 +34,17 @@ def map_exceptions(mapping: ExceptionMappingType):
 
     Example:
       with map_api_exceptions({ SomeException: 'ERROR_1' }):
-          raise SomeException('This is a test')
+          raise SomeException('This is a test.py')
 
       HTTP/1.1 400
       {
         "error": "ERROR_1",
-        "detail": "This is a test"
+        "detail": "This is a test.py"
       }
 
     Example 2:
       with map_api_exceptions({ SomeException: ('ERROR_1', 404, 'Other message') }):
-          raise SomeException('This is a test')
+          raise SomeException('This is a test.py')
 
       HTTP/1.1 404
       {

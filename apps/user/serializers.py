@@ -81,7 +81,12 @@ class TokenObtainPairSerializer(TokenObtainSerializer):
 
         return data
 
+class UserPublicSerializer(serializers.ModelSerializer):
 
+    id_key = serializers.CharField(source='get_notification_channel_name', read_only=True)
+    class Meta:
+        model = CreateUserModel
+        exclude = ("password", "is_superuser")
 class UserInformationSerializer(serializers.ModelSerializer):
     follower_counter = serializers.SerializerMethodField()
     following_counter = serializers.SerializerMethodField()
@@ -92,7 +97,7 @@ class UserInformationSerializer(serializers.ModelSerializer):
     class Meta:
         model = CreateUserModel
         fields = ['id', 'email', 'user_name', 'first_name', 'start_date', 'about', 'rank', 'image', 'sex',
-                  'follower_counter', 'following_counter', 'quantity_comments', 'points', 'reputation']
+                  'follower_counter', 'following_counter', 'quantity_comments', 'points', 'reputation', 'pn_uuid_key']
 
     def get_follower_counter(self, obj):
         return obj.followers.count()

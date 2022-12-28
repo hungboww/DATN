@@ -36,7 +36,6 @@ class Migration(migrations.Migration):
                 ('delete', models.BooleanField(default=False)),
                 ('is_employee', models.BooleanField(default=False)),
                 ('sex', models.CharField(choices=[('Nam', 'Nam'), ('Nữ', 'Nữ'), ('Khác', 'Khác'), ('Bí mật', 'Bí mật'), ('', '')], default='', max_length=30)),
-                ('groups', models.ManyToManyField(blank=True, help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.', related_name='user_set', related_query_name='user', to='auth.Group', verbose_name='groups')),
                 ('user_permissions', models.ManyToManyField(blank=True, help_text='Specific permissions for this user.', related_name='user_set', related_query_name='user', to='auth.Permission', verbose_name='user permissions')),
             ],
             options={
@@ -60,19 +59,6 @@ class Migration(migrations.Migration):
             options={
                 'db_table': 'tbl_user_group',
                 'ordering': ['id'],
-            },
-        ),
-        migrations.CreateModel(
-            name='UserGroupRelation',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('date_joined', models.DateField()),
-                ('group', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='user.usergroupmodel')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
-            ],
-            options={
-                'db_table': 'tbl_user_group_relationship',
-                'unique_together': {('user', 'group')},
             },
         ),
         migrations.CreateModel(

@@ -12,7 +12,6 @@ class Migration(migrations.Migration):
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ('comment', '0008_auto_20220819_0645'),
-        ('user', '0002_alter_createusermodel_groups'),
     ]
 
     operations = [

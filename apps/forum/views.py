@@ -12,16 +12,19 @@ from api.utils import custom_response
 from config.settings.base import CACHE_TTL
 from profanity import comment_filter
 # Create your views here.
-from .models import ForumModel
+from .models import ForumModel, Post1, Comment
 from .serializers import AddBlogForumSerializer, ListBlogForumSerializer, DetailBlogForumSerializer, \
-    UpvoteForumSerializer
+    UpvoteForumSerializer, PostSerializer, CommentSerializer
 from ..blog_it.models import BlogTagModel, UpvoteModel, Bookmarks
 from ..blog_it.serializers import BookmarksSerializer, UserBookmarksSerializer
 from ..notify.models import NotificationModel
 from ..notify.serializers import ForumNotificationSerializer
 from ..user.models import Follow
 
-
+from django.shortcuts import get_object_or_404
+from rest_framework.response import Response
+from rest_framework import generics
+from rest_framework.pagination import LimitOffsetPagination
 class AddBlogForum(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -297,4 +300,113 @@ class BookmarksPosts(APIView):
             }, msg_display='Hiển thị thành công'), status=status.HTTP_200_OK)
         return Response(custom_response({}, list=False, msg_display='Quá trình đã xảy ra lỗi', response_msg='ERROR', ))
 
+
+class PostListCreateView(generics.ListCreateAPIView):
+    queryset = Post1.objects.all()
+    serializer_class = PostSerializer
+    pagination_class = LimitOffsetPagination
+
+    def get_queryset(self):
+        filter_author = self.request.GET.get('author', 0)
+        if (filter_author == "1"):
+            return self.queryset.filter(author=self.request.user)
+        return super().get_queryset()
+
+
+class PostRetrieve(generics.RetrieveAPIView):
+    queryset = Post1.objects.all()
+    serializer_class = PostSerializer
+    lookup_field = 'id'
+
+
+class PostUpdateDestroyView(generics.UpdateAPIView, generics.DestroyAPIView):
+    queryset = Post1.objects.all()
+    serializer_class = PostSerializer
+    lookup_field = 'id'
+
+    def get_queryset(self):
+        return super().get_queryset().filter(author=self.request.user)
+
+
+class CommentsLimitOffsetPagination(LimitOffsetPagination):
+    default_limit = 10
+    max_limit = 10
+
+    def __init__(self) -> None:
+        self.count = 10
+        super().__init__()
+
+
+class CommentRetrieveCreateView(generics.ListCreateAPIView, CommentsLimitOffsetPagination):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    pagination_class = CommentsLimitOffsetPagination
+
+    def list(self, request, *args, **kwargs):
+        self.count = 10
+        post = get_object_or_404(Post1, id=kwargs.get('post_id'))
+        comments = Comment.objects.filter(post=post)
+        res = self.paginate_queryset(comments)
+        serializer = self.serializer_class(res, context={'request': request, 'post': post}, many=True)
+        return self.get_paginated_response(serializer.data)
+
+    def create(self, request, *args, **kwargs):
+        post = get_object_or_404(Post1, id=kwargs.get('post_id'))
+        serializer = self.serializer_class(data=request.data, context={'request': request, 'post': post})
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(data=serializer.data, status=200)
+
+        return Response(data=serializer.errors, status=400)
+
+class CommentBlog(PaginationAPIView):
+    pagination_class = CustomPagination
+
+    def post(self, request, pk):
+        forms = request.data
+        data = {
+            'post': pk,
+            'text': comment_filter(forms.get('text')),
+        }
+
+        serializer = CommentSerializer(data=data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(custom_response(serializer.data, msg_display='Thêm bình luận thành công!'),
+                            status=status.HTTP_201_CREATED)
+        return Response(custom_response(serializer.errors, response_code=400, response_msg='ERROR',
+                                        msg_display='Bình luận thuất bại, vui lòng thử lại'),
+                        status=status.HTTP_400_BAD_REQUEST)
+
+    # def patch(self, request, pk):
+    #     queryset = CommentModel.objects.filter(id=pk, author_id=request.user.id).first()
+    #     forms = request.data
+    #     data = {
+    #         'body': comment_filter(forms.get('body')),
+    #         'time_edit': datetime.now()
+    #     }
+    #     serializer = ListCommentSerializer(queryset, data=data, partial=True)
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         return Response(
+    #             custom_response(serializer.data, msg_display='Chỉnh sửa thành công.'),
+    #             status=status.HTTP_201_CREATED)
+    #     return Response(custom_response(serializer.errors, response_code=400, response_msg='ERROR',
+    #                                     msg_display='Chỉnh sửa không thành công'),
+    #                     status=status.HTTP_400_BAD_REQUEST)
+    #
+    # def delete(self, request, pk):
+    #     queryset = CommentModel.objects.filter(id=pk, author_id=request.user.id)
+    #     serializer = RepCommentSerializer(queryset, many=True)
+    #     queryset.delete()
+    #     return Response(custom_response(serializer.data, list=False, msg_display='Xóa bài viết thành công'))
+
+class CommentUpdateDestroyView(generics.UpdateAPIView, generics.DestroyAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    lookup_field = 'id'
+
+    def get_queryset(self):
+        return super().get_queryset().filter(user=self.request.user)
 

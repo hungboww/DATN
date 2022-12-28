@@ -11,10 +11,10 @@ class UserDataType(Instance):
     Example:
 
     class TestUserDataType(UserDataType):
-        type = "test"
+        type = "test.py"
 
         def get_user_data(user, request):
-            return {"test": "value"}
+            return {"test.py": "value"}
 
     user_data_registry.register(TestUserDataType())
 
@@ -25,8 +25,8 @@ class UserDataType(Instance):
         "id": 1,
         ...
       },
-      "test": {
-        "test": "value"
+      "test.py": {
+        "test.py": "value"
       }
     }
     """

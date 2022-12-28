@@ -10,7 +10,7 @@ from .views import AddBlogForum, \
     ListForumFollowers, ViewCount, \
     BookmarksPosts, \
     ListBookmarksPosts, \
-    EditPost
+    EditPost, CommentRetrieveCreateView, CommentUpdateDestroyView
 
 app_name = 'forum'
 
@@ -27,5 +27,7 @@ urlpatterns = [
     path('list-followers/', ListForumFollowers.as_view(), name='followers'),
     path('post-bookmark/<pk>', BookmarksPosts.as_view(), name='post-bookmark'),
     path('user-get-bookmark/', ListBookmarksPosts.as_view(), name='post-user-bookmarks'),
+    path("comments/<int:post_id>/", CommentRetrieveCreateView.as_view(), name="comments-list-create"),
+    path("comments/ops/<int:id>/", CommentUpdateDestroyView.as_view(), name="comments-delete-update"),
 
 ]

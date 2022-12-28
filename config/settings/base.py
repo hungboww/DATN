@@ -438,3 +438,7 @@ AUTH_USER_MODEL = 'user.CreateUserModel'
 # https://stackoverflow.com/questions/62337379/how-to-append-nginx-ip-to-x-forwarded
 # -for-in-kubernetes-nginx-ingress-controller
 # SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+PUBNUB_PUBLISH_KEY=os.getenv('PUBNUB_PUBLISH_KEY', 'pub-c-2b9b2b1b-8b1f-4b1f-8c1f-2b9b2b1b8b1f')
+PUBNUB_SUBSCRIBE_KEY=os.getenv('PUBNUB_SUBSCRIBE_KEY', 'sub-c-2b9b2b1b-8b1f-4b1f-8c1f-2b9b2b1b8b1f')
+PUBNUB_SECRET=os.getenv('PUBNUB_SECRET', 'sec-c-2b9b2b1b-8b1f-4b1f-8c1f-2b9b2b1b8b1f')
+SERVER_PUBNUB_UUID=os.getenv('SERVER_PUBNUB_UUID', '1')

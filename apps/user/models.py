@@ -65,7 +65,6 @@ class CreateUserModel(AbstractBaseUser, PermissionsMixin):
     delete = models.BooleanField(default=False)
     is_employee = models.BooleanField(blank=False, null=False, default=False)
     sex = models.CharField(max_length=30, choices=constant.USER_SEX_OPTION, default=constant.USER_SEX_NEW)
-    groups = models.ManyToManyField(UserGroupModel, related_name='users', through='UserGroupRelation')
     objects = CusCustomAccountManager()
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['user_name', 'first_name']
@@ -74,7 +73,10 @@ class CreateUserModel(AbstractBaseUser, PermissionsMixin):
         db_table = 'tbl_user'
         ordering = ['id']
         unique_together = ('email',)
-
+    def __str__(self) -> str:
+        return self.email + f"{self.id} "
+    def get_notification_channel_name(self) -> str:
+        return f"pn-notification-{self.id}"
     def __unicode__(self):
         return self.email
 
@@ -83,14 +85,14 @@ class CreateUserModel(AbstractBaseUser, PermissionsMixin):
         self.name = str(self.rank.encode('unicode_escape'))
 
 
-class UserGroupRelation(models.Model):
-    user = models.ForeignKey(CreateUserModel, on_delete=models.CASCADE)
-    group = models.ForeignKey(UserGroupModel, on_delete=models.CASCADE)
-    date_joined = models.DateField()
-
-    class Meta:
-        db_table = 'tbl_user_group_relationship'
-        unique_together = ['user', 'group']
+# class UserGroupRelation(models.Model):
+#     user = models.ForeignKey(CreateUserModel, on_delete=models.CASCADE)
+#     group = models.ForeignKey(UserGroupModel, on_delete=models.CASCADE)
+#     date_joined = models.DateField()
+#
+#     class Meta:
+#         db_table = 'tbl_user_group_relationship'
+#         unique_together = ['user', 'group']
 
 
 class Follow(models.Model):
